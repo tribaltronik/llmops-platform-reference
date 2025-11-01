@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tinyllama-deployment
+  labels:
+    app: tinyllama
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tinyllama
+  template:
+    metadata:
+      labels:
+        app: tinyllama
+    spec:
+      containers:
+      - name: tinyllama-container
+        image: user/tinyllama-service:v1.0 
+        ports:
+        - containerPort: 8000
+        resources:
+          limits:
+            nvidia.com/gpu: 1 
+          requests:
+            cpu: "1"
+            memory: "8Gi"
+            nvidia.com/gpu: 1
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 60 
+          periodSeconds: 10
